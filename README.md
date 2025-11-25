@@ -31,7 +31,7 @@ The project primarily uses the Arduino framework for the ESP32. The main code ha
 
 ### Main Files
 
-* `SmartHome_ESP32_Main.ino` or `main.cpp`: Contains the core setup and loop logic for the ESP32.
+* `SmartHome_ESP32_Main.ino` : Contains the core setup and loop logic for the ESP32.
 * `node_red_flow.png`: The flow for the Node-RED server (for backend logic).
 
 
