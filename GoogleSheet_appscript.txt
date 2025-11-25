@@ -1,0 +1,106 @@
+function doPost(e) {
+    var sheet = SpreadsheetApp.openById("1D338Ze-u6bgnH1HoZP298VggvJqJ3wchBfPVYZZaLn4").getActiveSheet();
+    var data = JSON.parse(e.postData.contents);
+    // Get values from JSON
+    var homeLED = data.Home_LED_Status || "1";
+    var fenceLED = data.Fence_LED_Status || "2";
+    var temp = data.Temp_Status || "3";
+    var parking = data.Parking_Status || "4";
+    // Find the last row in column B that has data, starting from row 3
+    var lastRow = sheet.getLastRow();
+    var startRow = 2; // We want to start from row 2
+    // Loop through column B to find the first empty row
+    var nextRow = startRow;
+    while (sheet.getRange(nextRow, 2).getValue() !== "" && nextRow <= lastRow) {
+      nextRow++;
+    }
+    let d = new Date();
+    let min = d.getMinutes();
+    let hour = d.getHours();
+    let sec = d.getSeconds();
+    let timeText = String(hour)+":"+String(min)+":"+sec;
+    sheet.getRange(nextRow, 1, 1, 5).setValues([[timeText, homeLED, fenceLED, temp, parking]]);
+    sheet.getRange(nextRow, 2, 1, 5).setHorizontalAlignment('center');
+    // Return a success message
+    var respones = "Data successfully written to row " + nextRow;
+    return respones;
+    /* Return a success message
+    return ContentService.createTextOutput("Data successfully written to row " + nextRow);*/
+
+}
+
+function doGet(e) {
+  var sheet = SpreadsheetApp.openById("1D338Ze-u6bgnH1HoZP298VggvJqJ3wchBfPVYZZaLn4").getActiveSheet();
+
+  var lastRow = sheet.getLastRow(); // หาบรรทัดสุดท้ายที่มีข้อมูล
+  var homeLED = sheet.getRange(lastRow, 2).getValue(); // Column B (คอลัมน์ที่ 2)
+  var fenceLED = sheet.getRange(lastRow, 3).getValue(); // Column C (คอลัมน์ที่ 3)
+  var temp = sheet.getRange(lastRow, 4).getValue(); // Column D (คอลัมน์ที่ 4)
+  var parking = sheet.getRange(lastRow, 5).getValue(); // Column E (คอลัมน์ที่ 5)
+
+
+  if(e.parameter['value'] == "1"){
+    //sent Home_LED_Status
+    var result = homeLED;
+    return ContentService.createTextOutput(result).setMimeType(ContentService.MimeType.TEXT);
+  }else if(e.parameter['value'] == "2"){
+    //sent Fence_LED_Status
+    result = fenceLED;
+    return ContentService.createTextOutput(result).setMimeType(ContentService.MimeType.TEXT);
+  }else if(e.parameter['value'] == "3"){
+    //sent Temp_Status
+    result = temp;
+    return ContentService.createTextOutput(result).setMimeType(ContentService.MimeType.TEXT);
+  }else if(e.parameter['value'] == "4"){
+    //sent Parking_Status
+    result = parking;
+    return ContentService.createTextOutput(result).setMimeType(ContentService.MimeType.TEXT);
+  }else{
+    result = 'No Parameters';
+    return ContentService.createTextOutput(result).setMimeType(ContentService.MimeType.TEXT);
+  }
+}
+
+function clearAllExceptFirstRows() {
+  // Get the active spreadsheet and the active sheet
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  
+  // Get the last row number that has content
+  var lastRow = sheet.getLastRow();
+  
+  // Delete everything except the first two rows
+  if (lastRow > 1) {
+    // Get the range from the third row to the last row
+    var range = sheet.getRange(2, 1, lastRow - 1, sheet.getLastColumn());
+    
+    // Clear the content in that range
+    range.clearContent();
+  }
+}
+
+function renameSheetWithDate() {
+  // Get the current active spreadsheet
+  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  
+  // Get the current date
+  var today = new Date();
+  
+  // Format the date as "DD-MM-YYYY"
+  var formattedDate = Utilities.formatDate(today, Session.getScriptTimeZone(), 'dd-MM-yyyy');
+  
+  // Create the new sheet name
+  var newSheetName1 = 'Data (' + formattedDate + ')';
+  var newSheetName2 = 'Report (' + formattedDate + ')';
+  
+  // Get the next sheet (the second sheet or whichever index you want)
+  var sheets = spreadsheet.getSheets();
+
+  // Rename the active sheet with the new name
+  var sheet1 = spreadsheet.getActiveSheet();
+  var sheet2 = sheets[1];
+  sheet1.setName(newSheetName1);
+  sheet2.setName(newSheetName2);
+  // Log the new name (optional)
+  Logger.log('Sheet renamed to: ' + newSheetName1);
+  Logger.log('Sheet renamed to: ' + newSheetName2);
+}

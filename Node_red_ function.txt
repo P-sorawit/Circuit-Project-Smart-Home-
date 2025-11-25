@@ -1,0 +1,36 @@
+Function1:
+var homeled = flow.get("Home_LED_Status") || "";
+var fenceled = flow.get("Fence_LED_Status") || "";
+var temp = flow.get("Temp_Status") || "";
+var park = flow.get("Parking_Status") || "";
+
+// Check if all values are available
+if (homeled !== "" && fenceled !== "" && temp !== "" && park !== "") {
+    msg.payload = {
+        "Home_LED_Status": homeled,
+        "Fence_LED_Status": fenceled,
+        "Temp_Status": temp,
+        "Parking_Status": park
+    };
+    return msg;  // Send only once when all values are ready
+} else {
+    return null;  // Do not send if any value is missing
+}
+Function2:
+flow.set("Home_LED_Status","");
+flow.set("Fence_LED_Status", "");
+flow.set("Temp_Status", "");
+flow.set("Parking_Status", "");
+return msg;
+Function3:
+flow.set("Home_LED_Status",msg.payload);
+return msg;
+Function4:
+flow.set("Fence_LED_Status",msg.payload);
+return msg;
+Function5:
+flow.set("Temp_Status",msg.payload);
+return msg;
+Function6:
+flow.set("Parking_Status",msg.payload);
+return msg;
